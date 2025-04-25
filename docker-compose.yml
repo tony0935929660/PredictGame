@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - mynetwork
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    expose:
+      - "80"
+    networks:
+      - mynetwork
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    expose:
+      - "3000"
+    networks:
+      - mynetwork
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - ACCEPT_EULA=${ACCEPT_EULA}
+      - SA_PASSWORD=${SA_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+      - ./sql/scripts:/docker-entrypoint-initdb.d
+    networks:
+      - mynetwork
+
+volumes:
+  sql_data:
+
+networks:
+  mynetwork:
