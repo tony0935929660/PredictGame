@@ -1,17 +1,32 @@
 using System.Text.Json.Serialization;
+using Backend.Data;
+using Microsoft.EntityFrameworkCore;
+using DotNetEnv;
 
-namespace backend;
+namespace Backend;
 
 public class Program
 {
     public static void Main(string[] args)
     {
+        Env.Load();
+
+        var dbServer = Environment.GetEnvironmentVariable("DB_SERVER") ?? "localhost";
+        var dbName = Environment.GetEnvironmentVariable("DB_DATABASE") ?? "PredictGame";
+        var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "sa";
+        var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "";
+
+        var connectionString = $"Server={dbServer};Database={dbName};User Id={dbUser};Password={dbPassword};TrustServerCertificate=True;";
+
         var builder = WebApplication.CreateSlimBuilder(args);
 
         builder.Services.ConfigureHttpJsonOptions(options =>
         {
             options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
         });
+
+        builder.Services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlServer(connectionString));
 
         var app = builder.Build();
 

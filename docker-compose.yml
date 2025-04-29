@@ -19,6 +19,8 @@ services:
       dockerfile: Dockerfile
     expose:
       - "80"
+    env_file:
+      - ./backend/.env     # ✅ 這行是讓 backend 吃到 .env
     networks:
       - mynetwork
 
@@ -28,6 +30,8 @@ services:
       dockerfile: Dockerfile
     expose:
       - "3000"
+    env_file:
+      - ./frontend/.env    # ✅ 如果 frontend 也要吃變數，可以這樣設定（可選）
     networks:
       - mynetwork
 
