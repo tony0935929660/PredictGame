@@ -12,7 +12,7 @@ public class User
     public string? LineId { get; set; }
 
     [Required]
-    public required string Password { get; set; }
+    public required string PasswordHash { get; set; }
 
     public bool IsAdmin { get; set; }
 
